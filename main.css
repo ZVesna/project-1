@@ -1,0 +1,32 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 0;
+}
+
+.grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap:wrap;
+  /* border: 1px solid grey; */
+  width: 300px;
+  height: 300px;
+}
+
+.cell {
+  border: 1px solid grey;
+  font-size: 10px;
+}
+
+.mine {
+  background-color: red;
+/*   background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Ffavpng.com%2Fpng_search%2Fminesweeper&psig=AOvVaw0NLPClrTnk7B1_1tYnugMw&ust=1610801980293000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLjjv5D_ne4CFQAAAAAdAAAAABAD');
+  background-size: contain; */
+}
