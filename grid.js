@@ -3,18 +3,40 @@ const width = 9
 const height = 10
 const cells = []
 const start = document.querySelector('button')
+const selectGrid = document.querySelector('li')
 
 
-// ? Different width and height, for square cells -> 
+
+
+
+// ? Different width and height -> 
 // ? change .grid width and height in javascript!
 // ! add these into functions to generate different size grids
 // ! remove from css
 // ? grid.style.width = '1000px' // outside the loop
 // ? grid.style.height = '1000px'
 // ? I can set variable for them as well
-// ! What happens if I use this value instead of 300 below?
+// ! define width and height (as number of cells) here? number of mines??
+// ? selection based on game, on 'click' (radio button)
+// ? check grid width and height for Intermediate and Expert
+function gridSize() {
+  const width = 9
+  const gridWidth = grid.style.width
+  const gridHeight = grid.style.height
+  if (selectGrid.innerHTML === 'Beginner') {
+    width = 9
+    gridWidth = '300px'
+    gridHeight = '300px'
+  } else if (selectGrid.innerHTML === 'Intermediate') { // check the values
+    gridWidth = ''
+    gridHeight = ''
+  } else if (selectGrid.innerHTML === 'Expert') { // check the values
+    gridWidth = ''
+    gridHeight = ''
+  }
+}
 
-
+// ! create separate function to return grid size
 
 
 
@@ -22,14 +44,19 @@ const start = document.querySelector('button')
 
 // ? use the random generated index to grab particular cell
 // ? and place a mine by adding class .mine to it
+// ? make sure not to add mine to the same cell multiple times
 // ! mineCount to have different values
 function addRandomMines() {
   let mineCount = 10
-  
   while (mineCount > 0) {
     const randomIndex = Math.floor(Math.random() * cells.length)
-    cells[randomIndex].classList.add('mine')
-    mineCount -= 1
+    const minePosition = cells[randomIndex] // keep const for minePosition
+    if (minePosition.classList.contains('mine')) {
+      continue
+    } else {
+      minePosition.classList.add('mine')
+      mineCount -= 1
+    }
   }
 }
 
@@ -42,6 +69,25 @@ function removeMines() {
     }  
   })
 }
+
+// ? function that will count the mines around each cell
+function countMinesAround() {
+  let count = 0
+  for (let i = 0; i < cells.length; i++) {
+    const num = !(cells[i].classList.contains('mine'))
+    if (num) {
+      if ((i + 1) < cells.length && (i + 1) % width > 0 && cells[i+1].classList.contains('mine')) {
+        count += 1
+      }
+      if ((i - 1) >= 0 && (i - 1) % width >= 0 && cells[i-1].classList.contains('mine')) {
+        count += 1
+      }
+      //if ((i + width) % width > 0
+      
+    }
+  }
+}
+countMinesAround()
 
 // ? Same width and height
 for (let i = 0; i < width ** 2; i++) { // width * height
