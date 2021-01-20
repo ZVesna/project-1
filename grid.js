@@ -20,24 +20,20 @@ let minesLeft = 10
 
 
 
-// ? Same width and height
+// ? create a board
 for (let i = 0; i < width * height; i++) {
   const cell = document.createElement('div')
-  cell.classList.add('cell')
   cell.setAttribute('id', i)
   grid.appendChild(cell)
   cells.push(cell)
-  cell.innerHTML = i
   cell.style.width = `${100 / width}%`
   cell.style.height = `${100 / height}%`
   
   // ? to prevent right click from defaul behaviuor
-  // ? (opening the drop down menu)
   cell.addEventListener('contextmenu', (e) => {
     e.preventDefault()
-    // this piece of code is enough for right click only
   })
-  // ? addEventListener for left and right click - if statement
+  // ? addEventListener for left and right click
   cell.addEventListener('mouseup', (e) => {
     if (e.button === 0) {
       click(cell)
@@ -72,19 +68,32 @@ function addRandomMines() {
   countMinesAround()
 }
 
-// ? removes .mine class for each cell that contains the class .mine
+// ? remove .mine class for each cell that contains the class .mine
 // ! create a const for the check if it is going to be used again
 function removeMines() {
-  cells.forEach(cell => {
+  cells.forEach((cell) => {
     if (cell.classList.contains('mine')) {
       cell.classList.remove('mine')
-    }  
+    }
+    if (cell.classList.contains('valid')) {
+      cell.classList.remove('valid')
+    }
+    if (cell.classList.contains('checked')) {
+      cell.classList.remove('checked')
+    }
+    if (cell.classList.contains('flag')) {
+      cell.classList.remove('flag')
+    }
+    cell.innerHTML = ''
+    isGameOver = false
+    found = 0
+    minesLeft = 10
   })
 }
 
+// ? right click - flags the mine
 function mineFound(cell) {
   const mineCount = 10
-  console.log(isGameOver)
   if (isGameOver) {
     return
   }
@@ -94,7 +103,7 @@ function mineFound(cell) {
       cell.innerHTML = '🍄'
       found ++
       minesLeft.innerHTML = mineCount - found
-      //checkForWin()
+      checkForWin()
     } else {
       cell.classList.remove('flag')
       cell.innerHTML = ''
@@ -104,6 +113,7 @@ function mineFound(cell) {
   }
 }
 
+// ? left click - opens the cell
 function click(cell) {
   const currentId = cell.id
   if (isGameOver) {
@@ -115,9 +125,10 @@ function click(cell) {
   if (cell.classList.contains('mine')) {
     gameOver(cell)
   } else {
-    const value = cell.getAttribute('data')
+    const value = Number(cell.getAttribute('data'))
     if (value !== 0) {
       cell.classList.add('checked')
+      cell.innerHTML = value
       if (value === 1) cell.classList.add('one')
       if (value === 2) cell.classList.add('two')
       if (value === 3) cell.classList.add('three')
@@ -126,14 +137,14 @@ function click(cell) {
       if (value === 6) cell.classList.add('six')
       if (value === 7) cell.classList.add('seven')
       if (value === 8) cell.classList.add('eight')
-      cell.innerHTML = value
       return
     }
-    checkCell(cell, currentId) // where to call this function?
+    checkCell(cell, currentId)
   }
+  cell.classList.add('checked')
 }
 
-// ? function that will count the mines around each cell
+// ? function that will check cell position and count mines around each cell
 function countMinesAround() {
   for (let i = 0; i < cells.length; i++) {
     let count = 0
@@ -143,19 +154,19 @@ function countMinesAround() {
     if (!cells[i].classList.contains('mine')) {
       if (i > 0 && !isLeftEdge && cells[i - 1].classList.contains('mine')) count ++
       if (i > 8 && !isRightEdge && cells[i + 1 - width].classList.contains('mine')) count ++
-      if (i > 9 && cells[i - width].classList.contains('mine')) count ++
+      if (i >= 9 && cells[i - width].classList.contains('mine')) count ++
       if (i > 10 && !isLeftEdge && cells[i - 1 - width].classList.contains('mine')) count ++
       if (i < 80 && !isRightEdge && cells[i + 1].classList.contains('mine')) count ++
       if (i < 72 && !isLeftEdge && cells[i - 1 + width].classList.contains('mine')) count ++
       if (i < 71 && !isRightEdge && cells[i + 1 + width].classList.contains('mine')) count ++
-      if (i < 71 && cells[i + width].classList.contains('mine')) count ++
+      if (i <= 71 && cells[i + width].classList.contains('mine')) count ++
       cells[i].setAttribute('data', count)
     }
   }
 }
 
 
-
+// ? refactoring in order to count mines for the whole board
 function checkCell(cell, currentId) {
   const isLeftEdge = (currentId % width === 0)
   const isRightEdge = (currentId % width === width - 1)
@@ -163,63 +174,55 @@ function checkCell(cell, currentId) {
   setTimeout(() => {
     if (currentId > 0 && !isLeftEdge) {
       const newId = cells[parseInt(currentId) - 1].id
-      //const newId = parseInt(currentId) - 1   ....refactor
       const newCell = document.getElementById(newId)
       click(newCell)
     }
     if (currentId > 8 && !isRightEdge) {
       const newId = cells[parseInt(currentId) + 1 - width].id
-      //const newId = parseInt(currentId) +1 -width   ....refactor
       const newCell = document.getElementById(newId)
       click(newCell)
     }
-    if (currentId > 9) {
+    if (currentId >= 9) {
       const newId = cells[parseInt(currentId - width)].id
-      //const newId = parseInt(currentId) -width   ....refactor
       const newCell = document.getElementById(newId)
       click(newCell)
     }
     if (currentId > 10 && !isLeftEdge) {
       const newId = cells[parseInt(currentId) - 1 - width].id
-      //const newId = parseInt(currentId) -1 -width   ....refactor
       const newCell = document.getElementById(newId)
       click(newCell)
     }
     if (currentId < 80 && !isRightEdge) {
       const newId = cells[parseInt(currentId) + 1].id
-      //const newId = parseInt(currentId) +1   ....refactor
       const newCell = document.getElementById(newId)
       click(newCell)
     }
     if (currentId < 72 && !isLeftEdge) {
       const newId = cells[parseInt(currentId) - 1 + width].id
-      //const newId = parseInt(currentId) -1 +width   ....refactor
       const newCell = document.getElementById(newId)
       click(newCell)
     }
     if (currentId < 71 && !isRightEdge) {
       const newId = cells[parseInt(currentId) + 1 + width].id
-      //const newId = parseInt(currentId) +1 +width   ....refactor
       const newCell = document.getElementById(newId)
       click(newCell)
     }
-    if (currentId < 71) {
+    if (currentId <= 71) {
       const newId = cells[parseInt(currentId) + width].id
-      //const newId = parseInt(currentId) +width   ....refactor
       const newCell = document.getElementById(newId)
       click(newCell)
     }
   }, 10)
 }
 
-//game over
+// ? game over
 function gameOver() {
-  //result.innerHTML = 'BOOM! Game Over!'
+  //result.innerHTML = 'Game Over!'
   isGameOver = true
 
-  //show ALL the bombs
+  // ? show all the bombs
   cells.forEach(cell => {
-    if (cell.classList.contains('mine')) {
+    if (cell.classList.contains('mine') && !cell.classList.contains('flag')) {
       cell.innerHTML = '🤢'
       cell.classList.remove('mine')
       cell.classList.add('checked')
@@ -227,11 +230,27 @@ function gameOver() {
   })
 }
 
+function checkForWin() {
+  let matches = 0
+  let num = 0
+  const mineCount = 10
+  for (let i = 0; i < cells.length; i++) {
+    if (cells[i].classList.contains('flag') && cells[i].classList.contains('mine')) {
+      matches ++
+    }
+    if (cells[i].classList.contains('valid') && cells[i].classList.contains('checked')) {
+      num ++
+    }
+    //console.log(matches, num)
+    if (matches === mineCount && matches + num === width * height) {
+      //onsole.log('You win!')
+      isGameOver = true
+    }
+  }
+}
 
 
-
-
-// ? Function has to be called every time the page reloads or player presses Start button
+// ? Function has to be called every time page reloads or player presses Start button
 addRandomMines()
 
 start.addEventListener('click', () => {

@@ -15,21 +15,29 @@ body {
   display: flex;
   flex-direction: row;
   flex-wrap:wrap;
-  /* border: 1px solid grey; */
-/*   width: 400px;
+  width: 400px;
   height: 400px;
 }
 
 .cell {
   border: 1px solid grey;
-  font-size: 10px;
+  font-size: 25px;
+  text-align: center;
 }
 
 .mine {
   background-color: red;
+}
+
+.checked {
+  background-color: green;
 } */
 
-.grid {
+
+
+
+
+ .grid {
   height: 400px;
   width: 400px;
   display: flex;
@@ -74,15 +82,15 @@ div {
 }
 
 .one {
-  color: #e76346;
+  color: blue;
 }
 
 .two {
-  color: #4199d3;
+  color: green;
 }
 
 .three {
-  color: #57da59;
+  color: red;
 }
 
 .four{
