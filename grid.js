@@ -3,43 +3,39 @@ const minesLeft = document.querySelector('.counter')
 const start = document.querySelector('button')
 const timer = document.querySelector('.timer')
 const width = 9
-const height = 9
 const cells = []
 let isGameOver = false
 let found = 0
 let timerOn = false
 timer.innerHTML = '000'
-
-
-
-// ? Different width and height, for square cells -> 
-// ? change .grid width and height in javascript!
-// ! add these into functions to generate different size grids
-// ! remove from css
-// ? grid.style.width = '1000px' // outside the loop
-// ? grid.style.height = '1000px'
-// ? I can set variable for them as well
-// ! What happens if I use this value instead of 300 below?
+let timerId = 0
+//const showAlert = document.querySelector('.alert').style.display = 'none'
 
 
 
 // ? create a board
-for (let i = 0; i < width * height; i++) {
+for (let i = 0; i < width * width; i++) {
   const cell = document.createElement('div')
   cell.setAttribute('id', i)
   grid.appendChild(cell)
   cells.push(cell)
   cell.style.width = `${100 / width}%`
-  cell.style.height = `${100 / height}%`
-  
+  cell.style.height = `${100 / width}%`
+
   // ? to prevent right click from defaul behaviuor
   cell.addEventListener('contextmenu', (e) => {
     e.preventDefault()
   })
+
   // ? addEventListener for left and right click
   cell.addEventListener('mouseup', (e) => {
     if (e.button === 0) {
+      if (timerOn === false) {
+        timerOn = true
+        setTimer()
+      }
       click(cell)
+      
     } else if (e.button === 2) {
       mineFound(cell)
     }
@@ -48,7 +44,6 @@ for (let i = 0; i < width * height; i++) {
 
 // ? use the random generated index to grab particular cell
 // ? and place a mine by adding class .mine to it
-// ! mineCount to have different values
 function addRandomMines() {
   let mineCount = 10
   minesLeft.innerHTML = 10 
@@ -73,7 +68,7 @@ function addRandomMines() {
   countMinesAround()
 }
 
-// ? remove all classes and update parameters for new game
+// ? remove all classes and update parameters for the new game
 function removeMines() {
   cells.forEach((cell) => {
     cell.className = ''
@@ -83,40 +78,34 @@ function removeMines() {
     minesLeft.innerHTML = 10
     timerOn = false
     timer.innerHTML = '000'
-    //clearInterval(timerID)
+    clearInterval(timerId)
   })
 }
 
 function setTimer() {
-  //timerOn = true
   if (timerOn) {
     timer.innerHTML = '000'
-    let timerId = 0
     timerId = setInterval(() => {
       timer.innerHTML = Number(timer.innerHTML) + 1
       if (Number(timer.innerHTML) > 999) {
-        timer.innerHTML = 999
+        timer.innerHTML = '999'
       }
     }, 1000)
   }
 }
 
-setTimer()
-
 // ? right click - flags the mine
 function mineFound(cell) {
   const mineCount = 10
   minesLeft.innerHTML = 10
-  if (isGameOver) {
-    return
-  }
+  if (isGameOver) return
   if (!cell.classList.contains('checked') && (found < mineCount)) {
     if (!cell.classList.contains('flag')) {
       cell.classList.add('flag')
       cell.innerHTML = '🍄'
       found ++
       minesLeft.innerHTML = mineCount - found
-      checkForWin()
+      checkWin()
     } else {
       cell.classList.remove('flag')
       cell.innerHTML = ''
@@ -226,9 +215,8 @@ function checkCell(cell, currentId) {
 
 // ? game over
 function gameOver() {
-  //alert('Game Over!')
   isGameOver = true
-  timerOn = false
+  clearInterval(timerId)
 
   // ? show all the bombs
   cells.forEach(cell => {
@@ -240,18 +228,50 @@ function gameOver() {
   })
 }
 
-function checkForWin() {
+function checkWin() {
   let matches = 0
   const mineCount = 10
+
   for (let i = 0; i < cells.length; i++) {
     if (cells[i].classList.contains('flag') && cells[i].classList.contains('mine')) {
       matches ++
     }
-    if (matches === mineCount) {
+    if (matches === mineCount && i === cells.length - 1) {
+      // ! condition
       console.log('win')
+      clearInterval(timerId)
+      //showAlert.style.display = 'block'
     }
   }
 }
+
+const playerTimes = []
+const timesList = document.querySelector('ol')
+const addTime = document.querySelector('p')
+
+addTime.addEventListener('click', () => {
+  const newName = prompt('Enter your name: ')
+  const newTime = Number(prompt('Enter your time: '))
+  const player = { name: newName, time: newTime }
+  playerTimes.push(player)
+  orderAndDisplayScores()
+})
+
+function orderAndDisplayScores() {
+  // ? take the times
+  const array = playerTimes
+    // ? sort by ascending order
+    .sort((playerA, playerB) => playerA.time - playerB.time)
+    .map(player => {
+      return `<li>
+        ${player.name} has ${player.time}
+      </li>`
+    })
+  timesList.innerHTML = array.join('')
+}
+
+
+
 
 // ? Function has to be called every time page reloads or player presses Start button
 addRandomMines()
