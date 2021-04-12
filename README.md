@@ -28,7 +28,7 @@ By left-clicking a random cell, the player starts the game and reveals either a 
 	- If the cell is not a mushroom and not next to any mushrooms (just an empty cell), cells around get revealed till numbers or mushrooms are reached.
 - If the player manages to 'mark' all the mushrooms without actually clicking on them, then the player wins and receives a score.
 
-<img align = 'center' src='https://i.imgur.com/46g9G6D.mp4' >
+https://i.imgur.com/46g9G6D.mp4
 
 You can play my game [here](https://zvesna.github.io/project-1/), or find the GitHub repo [here](https://github.com/ZVesna/project-1).
 
